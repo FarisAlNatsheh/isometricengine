@@ -137,15 +137,15 @@ public class Main extends GLFW{
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
 		
-				pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				//pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				
 
-				mapSol = pathfinder[0].getPath();
+				//mapSol = pathfinder[0].getPath();
 				
 				glfwSetCursorPosCallback(window, cursorInput = new MouseInput());
 				glfwSetScrollCallback(window, scrollInput = new Scroll());
