@@ -39,7 +39,7 @@ public class Main extends GLFW{
 	static boolean up, down, left, right;
 	static int charMode;
 	static float charX, charY, charCamX, charCamY;
-	static float charHitbox = 0.004f;
+	static float charHitbox = 0.005f;
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
@@ -491,7 +491,7 @@ public class Main extends GLFW{
 		//Drawing character on screen
 		//drawRect(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight);
 
-		drawChar(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight, charTextures[(int)animateChar][charMode]);
+		drawChar(0-tileWidth/6-camX,0+tileHeight*1.5f/2-camY,tileWidth/3,tileHeight*1.5f, charTextures[(int)animateChar][charMode]);
 
 		for(int i =0; i < gridHeight; i++) {
 			for(int j =gridWidth; j > 0; j--) {
