@@ -97,7 +97,7 @@ public class Main extends GLFW{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-		glClearColor(0,255,255,0);
+		glClearColor(0.5294f,0.8078f,0.9216f,0);
 		System.out.println("Loading textures");
 		grass = new Texture("Floor_Lower_1.png");
 		dirt = new Texture("dirt.png");
