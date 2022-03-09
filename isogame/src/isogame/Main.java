@@ -17,10 +17,10 @@ import javax.imageio.ImageIO;
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
 	public final static int WINDOW_WIDTH = 1280;
-	public final static int MAP_SIZE = 50;
-	static int gridWidth = 23;
-	static int gridHeight = 23;
-	static float tileWidth = 0.4f, tileHeight = 0.2f;
+	public final static int MAP_SIZE = 30;
+	static int gridWidth = 50;
+	static int gridHeight = 50;
+	static float tileWidth = 0.2f, tileHeight = 0.1f;
 	static int[][] mapE= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] mapSol= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] map= new int[MAP_SIZE][MAP_SIZE];
@@ -39,7 +39,7 @@ public class Main extends GLFW{
 	static boolean up, down, left, right;
 	static int charMode;
 	static float charX, charY, charCamX, charCamY;
-	static float charHitbox = 0.004f;
+	static float charHitbox = 0.001f;
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
@@ -137,7 +137,7 @@ public class Main extends GLFW{
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
 		
-				//pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
+				pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
@@ -145,7 +145,7 @@ public class Main extends GLFW{
 				//pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				
 
-				//mapSol = pathfinder[0].getPath();
+				mapSol = pathfinder[0].getPath();
 				
 				glfwSetCursorPosCallback(window, cursorInput = new MouseInput());
 				glfwSetScrollCallback(window, scrollInput = new Scroll());
