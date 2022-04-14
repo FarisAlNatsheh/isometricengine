@@ -1,5 +1,5 @@
 package isogame;
-//Use glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);.
+//Use glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
@@ -17,10 +17,10 @@ import javax.imageio.ImageIO;
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
 	public final static int WINDOW_WIDTH = 1280;
-	public final static int MAP_SIZE = 50;
-	static int gridWidth = 23;
-	static int gridHeight = 23;
-	static float tileWidth = 0.4f, tileHeight = 0.2f;
+	public final static int MAP_SIZE = 30;
+	static int gridWidth = 50;
+	static int gridHeight = 50;
+	static float tileWidth = 0.2f, tileHeight = 0.1f;
 	static int[][] mapE= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] mapSol= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] map= new int[MAP_SIZE][MAP_SIZE];
@@ -39,15 +39,25 @@ public class Main extends GLFW{
 	static boolean up, down, left, right;
 	static int charMode;
 	static float charX, charY, charCamX, charCamY;
-	static float charHitbox = 0.005f;
+	static float charHitbox = 0.001f;
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
+	
 	public static float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
 	}
 	public static int rand(int min, int max) {
 		return (int) Math.floor(Math.random()*(max-min+1)+min);
+	}
+	public static <T> void mirror(T[][] arr) {
+		for(int i = 0; i < arr.length; i++) {
+			for(int j = 0; j < arr[i].length/2; j++) {
+				T temp = arr[i][j];
+				arr[i][j] = arr[i][arr[i].length-1-j];
+				arr[i][arr[i].length-1-j] = temp;
+			}
+		}
 	}
 	public static void initializeTextures() {
 		int scale = 200;
@@ -97,7 +107,7 @@ public class Main extends GLFW{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-		glClearColor(0.5294f,0.8078f,0.9216f,0);
+		glClearColor(0,255,255,0);
 		System.out.println("Loading textures");
 		grass = new Texture("Floor_Lower_1.png");
 		dirt = new Texture("dirt.png");
@@ -128,25 +138,45 @@ public class Main extends GLFW{
 		int oldStateRight = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);
 		@SuppressWarnings("unused")
 		double oldStateScroll = 0;
-		
+
 		while(!glfwWindowShouldClose(window)) {
 			currentFPS = (System.nanoTime()-timeFPS);
 			currentTPS = (System.nanoTime()-timeTPS);			
-			
+
 			int endX = charXMap, endY = charYMap;
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
-		
-				//pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
+
+				pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
 				//pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				
 
-				//mapSol = pathfinder[0].getPath();
-				
+
+				mapSol = pathfinder[0].getPath();
+				map = new int[MAP_SIZE][MAP_SIZE];
+				int mapDiffX = charXMap-desX;
+				int mapDiffY = charYMap-desY;
+
+				for(int i = 0; i < mapSol.length; i++) {
+					for(int j = 0; j < mapSol[0].length; j++) {
+						if(mapSol[i][j] == 5)
+							if(mapDiffY > 0)
+								if(mapDiffX > 0)
+									map[i+desX][j+desY]= 1;
+								else
+									map[i+desX+mapDiffX][j+desY]= 1;
+							else								
+								if(mapDiffX > 0)
+									map[i+desX][j+desY+mapDiffY]= 1;
+								else
+									map[i+desX+mapDiffX][j+desY+mapDiffY]= 1;
+
+					}
+				}
+
 				glfwSetCursorPosCallback(window, cursorInput = new MouseInput());
 				glfwSetScrollCallback(window, scrollInput = new Scroll());
 				if(glfwGetKey(window, GLFW_KEY_W ) == GL_TRUE ||
@@ -254,7 +284,7 @@ public class Main extends GLFW{
 						mapE[mouseMapX][mouseMapY]=1;
 					}
 					if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GL_TRUE && oldStateRight != 1) {
-						mapE[mouseMapX][mouseMapY]=0;
+						map[mouseMapX][mouseMapY]=1;
 					}
 				}
 				if(glfwGetKey(window, GLFW_KEY_SPACE) == GL_TRUE) {
@@ -288,7 +318,7 @@ public class Main extends GLFW{
 					mapY++;
 					mapX--;
 				}
-				
+
 				mouseX = (float)(MouseInput.x/WINDOW_WIDTH)*2-1-camX;
 				mouseY = (float)(MouseInput.y/WINDOW_HEIGHT)*-2+1-camY;
 
@@ -303,7 +333,7 @@ public class Main extends GLFW{
 			}
 
 
-		
+
 
 			//Graphics loop
 			if(currentFPS >= targetFPMS) {
@@ -326,43 +356,22 @@ public class Main extends GLFW{
 				float x=(-(gridWidth*tileWidth)/2+tileWidth/2) +i*tileWidth/2+j*tileWidth/2;
 				float y=tileHeight/2-i*tileHeight/2+j*tileHeight/2;
 				if(mapX+j <= MAP_SIZE-1 && mapY+i <= MAP_SIZE-1 && mapX+j >= 0 && mapY+i >= 0) {
-					
+
 					if(map[mapX+j][mapY+i] == 0) {
 						fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
 						//fillDiamond(x,y,tileWidth,tileHeight,grass);
 					}
-				
+					else if(map[mapX+j][mapY+i] == 1) {
+						//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
+						fillDiamond(x,y,tileWidth,tileHeight,grass);
+					}
+
 				}
 				//else
-					//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
-				try {
-					if(mapSol[mapX+j][mapY+i] == 5) {
-						glColor3f(255,0,0);
-						//fillBlock(x+tileWidth*desX,y+tileHeight*desY,tileWidth,tileHeight,tileHeight,blue);
-						glColor3f(255,255,255);
-					}
-					}
-					catch(Exception e) {
-						
-					}
+				//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
 			}
 		}
-		for(int i =0; i < gridHeight; i++) {
-			for(int j =gridWidth; j >0; j--) {
-				float x=(-(gridWidth*tileWidth)/2+tileWidth/2) +i*tileWidth/2+j*tileWidth/2;
-				float y=tileHeight/2-i*tileHeight/2+j*tileHeight/2;
-				try {
-					if(mapSol[mapX+j][mapY+i] == 5) {
-						glColor3f(255,0,0);
-						fillDiamond(x+desX*tileWidth,y,tileWidth,tileHeight,grass);
-						glColor3f(255,255,255);
-					}
-					}
-					catch(Exception e) {
-						
-					}
-			}
-		}
+
 		//Drawing mouse
 
 		for(int i =0; i < gridHeight; i++) {
@@ -436,7 +445,7 @@ public class Main extends GLFW{
 						//drawDiamond(x1,y1+tileHeight,tileWidth,tileHeight);
 						charCamX = ((1-(x2+camX+tileWidth/2)/tileWidth)-0.5f );
 						charCamY = ((y2+camY+tileHeight+tileHeight/2)/tileHeight-0.5f);
-						
+
 						//System.out.println("X: " + charCamX+ "\tY:" + charCamY );
 						/*
 						glColor3f(255,255,0); 
@@ -448,7 +457,7 @@ public class Main extends GLFW{
 						glColor3f(255,0,0); 
 						drawTriangle(charX, charY,x2,y2+tileHeight,x2-tileWidth/2,y2+tileHeight/2);
 						 */
-						
+
 						topLeft = (area(charX, charY,x2,y2+tileHeight,x2-tileWidth/2,y2+tileHeight/2)< charHitbox);
 						topRight = (area(charX, charY,x2,y2+tileHeight,x2+tileWidth/2,y2+tileHeight/2)< charHitbox);
 						bottomLeft = (area(charX, charY,x2-tileWidth/2,y2+tileHeight/2,x2,y2)< charHitbox);
@@ -479,7 +488,7 @@ public class Main extends GLFW{
 						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house);
 						glColor4f(255,255,255,1f);
 					}
-					
+
 				}
 				if(!(mapX+j <= charXMap+1 && mapX+j >= charXMap-1 && mapY+i-2 >= charYMap && mapY+i-4 <= charYMap)) {
 					glColor4f(0,0,0,0.4f); 
@@ -491,7 +500,7 @@ public class Main extends GLFW{
 		//Drawing character on screen
 		//drawRect(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight);
 
-		drawChar(0-tileWidth/6-camX,0+tileHeight*1.5f/2-camY,tileWidth/3,tileHeight*1.5f, charTextures[(int)animateChar][charMode]);
+		drawChar(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight, charTextures[(int)animateChar][charMode]);
 
 		for(int i =0; i < gridHeight; i++) {
 			for(int j =gridWidth; j > 0; j--) {
@@ -500,26 +509,26 @@ public class Main extends GLFW{
 				if(mapX+j <= MAP_SIZE-1 && mapY+i <= MAP_SIZE-1 && mapX+j >= 0 && mapY+i >= 0) {
 					if(mapE[mapX+j][mapY+i] == 1 && mapY+i >= charYMap && mapX+j <= charXMap) {
 						if((mapX+j+1 == charXMap && mapY+i-1 == charYMap)||
-							(mapX+j+1 == charXMap && mapY+i == charYMap)||
-							(mapX+j == charXMap && mapY+i-1 == charYMap)||
-							(mapX+j+2 == charXMap && mapY+i-2 == charYMap) ||
-							(mapX+j+2 == charXMap && mapY+i-1 == charYMap) ||
-							(mapX+j+1 == charXMap && mapY+i-2== charYMap)
-							)
+								(mapX+j+1 == charXMap && mapY+i == charYMap)||
+								(mapX+j == charXMap && mapY+i-1 == charYMap)||
+								(mapX+j+2 == charXMap && mapY+i-2 == charYMap) ||
+								(mapX+j+2 == charXMap && mapY+i-1 == charYMap) ||
+								(mapX+j+1 == charXMap && mapY+i-2== charYMap)
+								)
 							glColor4f(255,255,255,0.3f);
 						fillRect(x,y,tileWidth,tileHeight*2,house);
 						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house);
 						glColor4f(255,255,255,1f);
 					}
-						
-					
+
+
 				}
 				//Lighting
-			
-					
+
+
 			}
 		}
-		
+
 		//drawRect(0,1,0,2);
 		//drawRect(-1,0,2,0);
 		//tileHeight+= 0.00001f;
@@ -528,7 +537,7 @@ public class Main extends GLFW{
 		//glRotatef(0.01f, 1,1, 0);
 		//glTranslatef(-0.0001f,0.0001f,0);
 		//fillDiamond(mouseX,mouseY,tileWidth,tileHeight,dirt);
-	
+
 		fillRect(mouseX,mouseY,0.035f,0.1f, cursor);
 
 	}
@@ -555,13 +564,13 @@ public class Main extends GLFW{
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
 			glVertex2f(x,y);
-	
+
 			glTexCoord2f(cut,0);
 			glVertex2f(x+width, y);
-	
+
 			glTexCoord2f(cut,1);
 			glVertex2f(x+width, y-height);
-	
+
 			glTexCoord2f(0,1);
 			glVertex2f(x, y-height);
 			glEnd();
@@ -571,13 +580,13 @@ public class Main extends GLFW{
 			glBegin(GL_QUADS);
 			glTexCoord2f(cut,0);
 			glVertex2f(x,y);
-	
+
 			glTexCoord2f(0,0);
 			glVertex2f(x+width, y);
-	
+
 			glTexCoord2f(0,1);
 			glVertex2f(x+width, y-height);
-	
+
 			glTexCoord2f(cut,1);
 			glVertex2f(x, y-height);
 			glEnd();
@@ -606,7 +615,7 @@ public class Main extends GLFW{
 		glVertex2f(x-width/2, y-length/2);
 
 		glEnd();
-		
+
 	}
 	public static void fillDiamond2(float x, float y, float width, float height) {
 		glBindTexture(GL_TEXTURE_2D, 0);
