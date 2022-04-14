@@ -24,12 +24,15 @@ public class Pathfinder {
 			endY = temp;
 			flipped = true;
 		}
-		this.map = new Node[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
-		mapFinal = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
+		//this.map = new Node[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
+		//mapFinal = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
+		this.map = new Node[map.length][map[0].length];
+		this.mapFinal = new int[map.length][map[0].length];
+
 
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
-				if(map[i+startX][j+startY] == 0)
+				if(map[i][j] == 0)
 					this.map[i][j] = new Node(3,i,j);
 				else
 					this.map[i][j] = new Node(2,i,j);

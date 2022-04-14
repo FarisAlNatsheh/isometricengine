@@ -42,6 +42,8 @@ public class Main extends GLFW{
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
+	private static int endX;
+	private static int endY;
 	
 	public static float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
@@ -84,6 +86,16 @@ public class Main extends GLFW{
 			animateChar+=animSpeed;
 		else
 			animateChar = 0;
+	}
+	public static void pathfind() {
+		pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);
+		pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
+		pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
+		pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
+		pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
+		pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
+
+		mapSol = pathfinder[0].getPath();
 	}
 	public static void createWindow() {
 		@SuppressWarnings("unused")
@@ -142,19 +154,14 @@ public class Main extends GLFW{
 			currentFPS = (System.nanoTime()-timeFPS);
 			currentTPS = (System.nanoTime()-timeTPS);			
 
-			int endX = charXMap, endY = charYMap;
+			endX = charXMap;
+			endY = charYMap;
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
 
-				pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				//pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				//pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				//pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				//pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
-				//pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
 
 
-				mapSol = pathfinder[0].getPath();
+				
 				map = new int[MAP_SIZE][MAP_SIZE];
 				int mapDiffX = charXMap-desX;
 				int mapDiffY = charYMap-desY;
@@ -296,12 +303,14 @@ public class Main extends GLFW{
 					camX = 0;
 					mapX++;
 					mapY++;
+					pathfind();
 				}
 				if(camX > tileWidth) {
 					glTranslatef(-camX,0,0);
 					camX = 0;
 					mapX--;
 					mapY--;
+					pathfind();
 				}
 
 				if(camY < -tileHeight) {
@@ -309,6 +318,7 @@ public class Main extends GLFW{
 					camY = 0;
 					mapX++;
 					mapY--;
+					pathfind();
 				}
 
 				if(camY > tileHeight) {
@@ -316,6 +326,7 @@ public class Main extends GLFW{
 					camY = 0;
 					mapY++;
 					mapX--;
+					pathfind();
 				}
 
 				mouseX = (float)(MouseInput.x/WINDOW_WIDTH)*2-1-camX;
