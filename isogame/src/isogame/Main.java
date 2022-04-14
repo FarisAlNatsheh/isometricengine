@@ -12,7 +12,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
-
+//
 
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
