@@ -29,7 +29,7 @@ public class Pathfinder {
 
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
-				if(map[i+startY][j+startX] == 0)
+				if(map[i+startX][j+startY] == 0)
 					this.map[i][j] = new Node(3,i,j);
 				else
 					this.map[i][j] = new Node(2,i,j);
@@ -168,7 +168,6 @@ public class Pathfinder {
 				{0,0,0,0,0}
 		};
 		System.out.println(Arrays.deepToString(new Pathfinder(map,1,0,3,3).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
-
 	}
 }
 
