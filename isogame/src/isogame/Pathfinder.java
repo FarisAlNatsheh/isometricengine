@@ -4,31 +4,34 @@ package isogame;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Pathfinder {
+public class Pathfinder implements Runnable {
 	Node[][] map;
 	int[][] mapFinal;
 	private int startx;
 	private int starty;
 	boolean flipped;
-
-	public Pathfinder(int map[][], int startX, int startY, int endX, int endY) {
+	double timeI = System.nanoTime();
+	int mapI[][];
+	int startX,startY,endX,endY;
+	public void run(int map[][], int startX, int startY, int endX, int endY) {
 		//[HEIGHT][WIDTH]
-				//System.out.println(Math.abs(startX-endX)+1);
+		//System.out.println(Math.abs(startX-endX)+1);
 		//System.out.println(Math.abs(startY-endY)+1);
-		if(startX > endX || startY > endY) {
-			int temp=startY;
-			int temp2=startX;
-			startY = endY;
-			startX = endX;
-			endX = temp2;
-			endY = temp;
-			flipped = true;
-		}
+//		if(startX > endX || startY > endY) {
+//			int temp=startY;
+//			int temp2=startX;
+//			startY = endY;
+//			startX = endX;
+//			endX = temp2;
+//			endY = temp;
+//			flipped = true;
+//		}
 		//this.map = new Node[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
 		//mapFinal = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
 		this.map = new Node[map.length][map[0].length];
 		this.mapFinal = new int[map.length][map[0].length];
 
+		
 
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
@@ -38,18 +41,29 @@ public class Pathfinder {
 					this.map[i][j] = new Node(2,i,j);
 			}
 		}
-		this.map[Math.abs(endY-startY)][Math.abs(endX-startX)].setType(1); 
-		this.startx = 0;
-		this.starty = 0;
-
-		for(int i = startY; i < this.map.length; i++) {
-			for(int j = startX; j < this.map[0].length; j++) {
-				//System.out.print(this.map[i][j].getType()+" ");
-			}
-			//System.out.println();
-		}
+		this.map[endY][endX].setType(1); 
+		this.map[startY][startX].setType(0);
+		//System.out.println("Loaded map\n"+ (System.nanoTime()-timeI)*0.000001+" ms");
+		//timeI = System.nanoTime();
+		/*for(int i = startY; i < this.map.length; i++) {
+	for(int j = startX; j < this.map[0].length; j++) {
+		//System.out.print(this.map[i][j].getType()+" ");
+	}
+	//System.out.println();
+}*/
 
 		new Algorithm().Dijkstra();
+		//System.out.println("Ran algorithm\n"+ (System.nanoTime()-timeI)*0.000001+" ms");
+		//timeI = System.nanoTime();
+	}
+	
+	public Pathfinder(int map[][], int startX, int startY, int endX, int endY) {
+		mapI = map;
+		this.startX = startX;
+		this.startY = startY;
+		this.endX = endX;
+		this.endY = endY;
+		run();
 	}
 	public int[][] getPath() {
 		return mapFinal;
@@ -164,13 +178,36 @@ public class Pathfinder {
 	}
 	public static void main(String[] args) {
 		int[][] map = {
-				{0,1,0,0,0},
+				{0,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0}
 		};
-		System.out.println(Arrays.deepToString(new Pathfinder(map,1,0,3,3).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
+		System.out.println(Arrays.deepToString(new Pathfinder(map,3,3,4,4).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
+	}
+
+	public void run() {
+		//run(mapI,startX,startY,endX,endY);
+		this.map = new Node[mapI.length][mapI[0].length];
+		this.mapFinal = new int[mapI.length][mapI[0].length];
+
+		
+
+		for(int i = 0; i < this.map.length; i++) {
+			for(int j = 0; j < this.map[0].length; j++) {
+				if(mapI[i][j] == 0)
+					this.map[i][j] = new Node(3,i,j);
+				else
+					this.map[i][j] = new Node(2,i,j);
+			}
+		}
+		startx = startX;
+		starty= startY;
+		this.map[endY][endX].setType(1); 
+		this.map[startY][startX].setType(0);
+		
+		new Algorithm().Dijkstra();
 	}
 }
 

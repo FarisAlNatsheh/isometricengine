@@ -16,11 +16,11 @@ import javax.imageio.ImageIO;
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
 	public final static int WINDOW_WIDTH = 1280;
-	public final static int MAP_SIZE = 30;
+	public final static int MAP_SIZE = 70;
 	static int gridWidth = 50;
 	static int gridHeight = 50;
 	static float tileWidth = 0.2f, tileHeight = 0.1f;
-	static int[][] mapE= new int[MAP_SIZE][MAP_SIZE];
+	volatile static int[][] mapE= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] mapSol= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] map= new int[MAP_SIZE][MAP_SIZE];
 	static int mapX = 0, mapY = -9;
@@ -44,7 +44,7 @@ public class Main extends GLFW{
 	static int desX=6, desY=6;
 	private static int endX;
 	private static int endY;
-	
+
 	public static float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
 	}
@@ -88,14 +88,16 @@ public class Main extends GLFW{
 			animateChar = 0;
 	}
 	public static void pathfind() {
-		pathfinder[0] = new Pathfinder(mapE,desX,desY,endY, endX);
-		pathfinder[1] = new Pathfinder(mapE,desX,desY,endY, endX);	
-		pathfinder[2] = new Pathfinder(mapE,desX,desY,endY, endX);	
-		pathfinder[3] = new Pathfinder(mapE,desX,desY,endY, endX);	
-		pathfinder[4] = new Pathfinder(mapE,desX,desY,endY, endX);	
-		pathfinder[5] = new Pathfinder(mapE,desX,desY,endY, endX);	
 
-		mapSol = pathfinder[0].getPath();
+		Thread t = new Thread() {
+			public void run() {  // override the run() for the running behaviors
+				pathfinder[0] = new Pathfinder(mapE,5,5,charYMap, charXMap);
+				mapSol = pathfinder[0].getPath();
+			}
+		};
+		t.setDaemon(true);
+		t.start();
+
 	}
 	public static void createWindow() {
 		@SuppressWarnings("unused")
@@ -161,28 +163,34 @@ public class Main extends GLFW{
 
 
 
-				
+
 				map = new int[MAP_SIZE][MAP_SIZE];
 				int mapDiffX = charXMap-desX;
 				int mapDiffY = charYMap-desY;
 
+//				for(int i = 0; i < mapSol.length; i++) {
+//					for(int j = 0; j < mapSol[0].length; j++) {
+//						if(mapSol[i][j] == 5)
+//							if(mapDiffY > 0)
+//								if(mapDiffX > 0)
+//									map[i+desX][j+desY]= 1;
+//								else
+//									map[i+desX+mapDiffX][j+desY]= 1;
+//							else								
+//								if(mapDiffX > 0)
+//									map[i+desX][j+desY+mapDiffY]= 1;
+//								else
+//									map[i+desX+mapDiffX][j+desY+mapDiffY]= 1;
+//
+//					}
+//				}
 				for(int i = 0; i < mapSol.length; i++) {
 					for(int j = 0; j < mapSol[0].length; j++) {
 						if(mapSol[i][j] == 5)
-							if(mapDiffY > 0)
-								if(mapDiffX > 0)
-									map[i+desX][j+desY]= 1;
-								else
-									map[i+desX+mapDiffX][j+desY]= 1;
-							else								
-								if(mapDiffX > 0)
-									map[i+desX][j+desY+mapDiffY]= 1;
-								else
-									map[i+desX+mapDiffX][j+desY+mapDiffY]= 1;
+							map[i][j] = 1;
 
 					}
 				}
-
 				glfwSetCursorPosCallback(window, cursorInput = new MouseInput());
 				glfwSetScrollCallback(window, scrollInput = new Scroll());
 				if(glfwGetKey(window, GLFW_KEY_W ) == GL_TRUE ||
