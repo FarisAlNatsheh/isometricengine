@@ -42,8 +42,6 @@ public class Main extends GLFW{
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
-	private static int endX;
-	private static int endY;
 
 	public static float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
@@ -90,8 +88,9 @@ public class Main extends GLFW{
 	public static void pathfind() {
 
 		Thread t = new Thread() {
-			public void run() {  // override the run() for the running behaviors
+			public void run() {
 				pathfinder[0] = new Pathfinder(mapE,5,5,charYMap, charXMap);
+				pathfinder[0].run();
 				mapSol = pathfinder[0].getPath();
 			}
 		};
@@ -154,10 +153,7 @@ public class Main extends GLFW{
 
 		while(!glfwWindowShouldClose(window)) {
 			currentFPS = (System.nanoTime()-timeFPS);
-			currentTPS = (System.nanoTime()-timeTPS);			
-
-			endX = charXMap;
-			endY = charYMap;
+			currentTPS = (System.nanoTime()-timeTPS);		
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
 
@@ -165,8 +161,8 @@ public class Main extends GLFW{
 
 
 				map = new int[MAP_SIZE][MAP_SIZE];
-				int mapDiffX = charXMap-desX;
-				int mapDiffY = charYMap-desY;
+//				int mapDiffX = charXMap-desX;
+//				int mapDiffY = charYMap-desY;
 
 //				for(int i = 0; i < mapSol.length; i++) {
 //					for(int j = 0; j < mapSol[0].length; j++) {
