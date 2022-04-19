@@ -1,6 +1,5 @@
 package isogame;
 //Use glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-//
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
