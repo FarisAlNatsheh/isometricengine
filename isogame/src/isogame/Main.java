@@ -161,25 +161,25 @@ public class Main extends GLFW{
 
 
 				map = new int[MAP_SIZE][MAP_SIZE];
-//				int mapDiffX = charXMap-desX;
-//				int mapDiffY = charYMap-desY;
+				//				int mapDiffX = charXMap-desX;
+				//				int mapDiffY = charYMap-desY;
 
-//				for(int i = 0; i < mapSol.length; i++) {
-//					for(int j = 0; j < mapSol[0].length; j++) {
-//						if(mapSol[i][j] == 5)
-//							if(mapDiffY > 0)
-//								if(mapDiffX > 0)
-//									map[i+desX][j+desY]= 1;
-//								else
-//									map[i+desX+mapDiffX][j+desY]= 1;
-//							else								
-//								if(mapDiffX > 0)
-//									map[i+desX][j+desY+mapDiffY]= 1;
-//								else
-//									map[i+desX+mapDiffX][j+desY+mapDiffY]= 1;
-//
-//					}
-//				}
+				//				for(int i = 0; i < mapSol.length; i++) {
+				//					for(int j = 0; j < mapSol[0].length; j++) {
+				//						if(mapSol[i][j] == 5)
+				//							if(mapDiffY > 0)
+				//								if(mapDiffX > 0)
+				//									map[i+desX][j+desY]= 1;
+				//								else
+				//									map[i+desX+mapDiffX][j+desY]= 1;
+				//							else								
+				//								if(mapDiffX > 0)
+				//									map[i+desX][j+desY+mapDiffY]= 1;
+				//								else
+				//									map[i+desX+mapDiffX][j+desY+mapDiffY]= 1;
+				//
+				//					}
+				//				}
 				for(int i = 0; i < mapSol.length; i++) {
 					for(int j = 0; j < mapSol[0].length; j++) {
 						if(mapSol[i][j] == 5)
@@ -330,7 +330,9 @@ public class Main extends GLFW{
 					camY = 0;
 					mapY++;
 					mapX--;
-					pathfind();
+					for(int i = 0; i < 10; i++) {
+						pathfind();
+					}
 				}
 
 				mouseX = (float)(MouseInput.x/WINDOW_WIDTH)*2-1-camX;
