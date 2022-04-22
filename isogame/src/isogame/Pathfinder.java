@@ -3,6 +3,8 @@ package isogame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Pathfinder implements Runnable {
 	Node[][] map;
@@ -79,16 +81,16 @@ public class Pathfinder implements Runnable {
 		//THIS ARRAYLIST CONTAINS ALL THE NODES THAT WERE EXPLORED, IT IS THEN ADDED TO THE QUE
 		//A HOPS VARIABLE IN EACH NODE REPRESENTS THE NUMBER OF NODES TRAVELED FROM THE START
 		public void Dijkstra() {
-			ArrayList<Node> priority = new ArrayList<Node>();	//CREATE A PRIORITY QUE
+			Queue<Node> priority = new LinkedList<Node>();	//CREATE A PRIORITY QUE
 			priority.add(map[startx][starty]);	//ADD THE START TO THE QUE
 			while(true) {
 				if(priority.size() <= 0) {	//IF THE QUE IS 0 THEN NO PATH CAN BE FOUND
 					break;
 				}
-				int hops = priority.get(0).getHops()+1;	//INCREMENT THE HOPS VARIABLE
-				ArrayList<Node> explored = exploreNeighbors(priority.get(0), hops);	//CREATE AN ARRAYLIST OF NODES THAT WERE EXPLORED
+				int hops = priority.peek().getHops()+1;	//INCREMENT THE HOPS VARIABLE
+				ArrayList<Node> explored = exploreNeighbors(priority.peek(), hops);	//CREATE AN ARRAYLIST OF NODES THAT WERE EXPLORED
 				if(explored.size() > 0) {
-					priority.remove(0);	//REMOVE THE NODE FROM THE QUE
+					priority.remove();	//REMOVE THE NODE FROM THE QUE
 					priority.addAll(explored);	//ADD ALL THE NEW NODES TO THE QUE
 					for(int i = 0;i < map.length; i++) {
 						for(int j = 0;j < map[0].length; j++) {
@@ -99,7 +101,7 @@ public class Pathfinder implements Runnable {
 					}
 					//System.out.println();
 				} else {	//IF NO NODES WERE EXPLORED THEN JUST REMOVE THE NODE FROM THE QUE
-					priority.remove(0);
+					priority.remove();
 				}
 			}
 		}
