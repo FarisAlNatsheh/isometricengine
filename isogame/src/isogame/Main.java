@@ -93,15 +93,6 @@ public class Main extends GLFW{
 		//RUN ENEMY PATHFINDING ON THE SAME THREAD
 		for(Enemy enemy: enemies)
 			enemy.pathfind();
-		Thread t = new Thread() {
-			public void run() {
-				//pathfinder[0] = new Pathfinder(mapE,enemy.getMapX(),enemy.getMapY(),charYMap, charXMap);
-				//pathfinder[0].run();
-				//mapSol = pathfinder[0].getPath();
-			}
-		};
-		//t.setDaemon(true);
-		t.start();
 	}
 	public static void createWindow() {
 		@SuppressWarnings("unused")
