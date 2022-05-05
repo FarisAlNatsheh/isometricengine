@@ -45,7 +45,6 @@ public class Pathfinder implements Runnable {
 	}
 	public int[][] getPath() {
 		return mapFinal;
-		//return new int[1][1];
 	}
 	class Algorithm {	//ALGORITHM CLASS
 
