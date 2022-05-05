@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 public class Enemy extends Entity{
 
-	private Texture[][] texture;
+	static Texture[][] texture;
 	private Pathfinder pathfinder;
 	private float offsetX, offsetY, speed = 0.007f;
 	private int[][] path;
@@ -18,9 +18,9 @@ public class Enemy extends Entity{
 	public Enemy(float width, float height, int mapX, int mapY) {
 		super(0, 0, width, height, mapX, mapY);
 		pathfind();
-		initializeTextures();
+		
 	}
-	public void initializeTextures() {
+	public static void initializeTextures() {
 		int scale = 200;
 		BufferedImage sheet = null;
 		try {
