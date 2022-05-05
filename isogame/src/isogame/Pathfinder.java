@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Pathfinder implements Runnable {
+public class Pathfinder{
 	Node[][] map;
 	int[][] mapFinal;
 	private int startx;
@@ -169,10 +169,13 @@ public class Pathfinder implements Runnable {
 
 	public void run() {
 		//run(mapI,startX,startY,endX,endY);
+		System.out.println();
+		System.out.println("Pathfinder:");
 		this.map = new Node[mapI.length][mapI[0].length];
 		this.mapFinal = new int[mapI.length][mapI[0].length];
 
-		
+		System.out.println("Map loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+		timeI = System.nanoTime();
 		//System.out.println(Math.abs(startY-endY));
 		//System.out.println(Math.abs(startX-endX));
 		int newMap[][] = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
@@ -186,12 +189,18 @@ public class Pathfinder implements Runnable {
 					this.map[i][j] = new Node(2,i,j);
 			}
 		}
+		System.out.println("Nodes loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+		timeI = System.nanoTime();
+		
 		startx = startX;
 		starty= startY;
 		this.map[endY][endX].setType(1); 
 		this.map[startY][startX].setType(0);
 		
 		new Algorithm().Dijkstra();
+		System.out.println("Algorithm: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+		timeI = System.nanoTime();
+		System.out.println();
 	}
 }
 

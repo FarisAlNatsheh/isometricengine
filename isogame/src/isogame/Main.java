@@ -127,7 +127,7 @@ public class Main extends GLFW{
 		System.out.println("Textures Loaded");
 		Enemy.initializeTextures();
 		enemies = new ArrayList<Enemy>();
-		for(int i= 0; i < 30; i++) {
+		for(int i= 0; i < 10; i++) {
 			enemies.add(new Enemy(tileWidth/4,tileHeight,rand(2,MAP_SIZE-2),rand(2,MAP_SIZE-2)));
 			
 		}
@@ -139,11 +139,11 @@ public class Main extends GLFW{
 		}
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			for(int j =0; j < MAP_SIZE; j+=4) {
-				mapE[j][i] = 1;
+				//mapE[j][i] = 1;
 			}
 		}
 		for(int j =0; j < MAP_SIZE; j+=1) {
-			mapE[j][MAP_SIZE/2] = 0;
+			//mapE[j][MAP_SIZE/2] = 0;
 		}
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			mapE[i][0] = 1;
