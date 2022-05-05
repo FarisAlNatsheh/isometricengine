@@ -16,14 +16,15 @@ import javax.imageio.ImageIO;
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
 	public final static int WINDOW_WIDTH = 1280;
-	public final static int MAP_SIZE = 70;
+	public final static int MAP_SIZE = 33;
 	static int gridWidth = 50;
 	static int gridHeight = 50;
 	static float tileWidth = 0.2f, tileHeight = 0.1f;
+	static float tileSide = (float) Math.sqrt(Math.pow(tileWidth/2, 2)+Math.pow(tileHeight/2, 2));
 	volatile static int[][] mapE= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] mapSol= new int[MAP_SIZE][MAP_SIZE];
 	static int[][] map= new int[MAP_SIZE][MAP_SIZE];
-	static int mapX = 0, mapY = -9;
+	static int mapX = -15, mapY = -15;
 	static float camX = 0, camY = 0;
 	static float speed = 0.009f;
 	static double FPS = 60000.0;
@@ -33,7 +34,7 @@ public class Main extends GLFW{
 	static int mouseMapX=0, mouseMapY=0;
 	static int charXMap=0, charYMap=0;
 	static double animateChar;
-	static Texture grass,house,dirt, cursor, blue, out;
+	static Texture grass,house,dirt, cursor, blue, out, bottom;
 	static Texture[][] charTextures;
 	static boolean up, down, left, right;
 	static int charMode;
@@ -42,7 +43,9 @@ public class Main extends GLFW{
 	static boolean topLeft, topRight, bottomLeft, bottomRight;
 	static Pathfinder[] pathfinder = new Pathfinder[6];
 	static int desX=6, desY=6;
-
+	static int angleR = 0;
+	static Enemy enemy;
+	
 	public static float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
 	}
@@ -86,15 +89,16 @@ public class Main extends GLFW{
 			animateChar = 0;
 	}
 	public static void pathfind() {
-
+		//RUN ENEMY PATHFINDING ON THE SAME THREAD
+		enemy.pathfind();
 		Thread t = new Thread() {
 			public void run() {
-				pathfinder[0] = new Pathfinder(mapE,5,5,charYMap, charXMap);
+				pathfinder[0] = new Pathfinder(mapE,enemy.getMapX(),enemy.getMapY(),charYMap, charXMap);
 				pathfinder[0].run();
-				mapSol = pathfinder[0].getPath();
+				//mapSol = pathfinder[0].getPath();
 			}
 		};
-		t.setDaemon(true);
+		//t.setDaemon(true);
 		t.start();
 
 	}
@@ -120,17 +124,27 @@ public class Main extends GLFW{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glClearColor(0,255,255,0);
-		System.out.println("Loading textures");
+		System.out.println(tileSide);
 		grass = new Texture("Floor_Lower_1.png");
 		dirt = new Texture("dirt.png");
 		house = new Texture("Amp 9.png");//housee
 		cursor = new Texture("Cursor1.png");
 		blue = new Texture("Blue 2.png");
 		out = new Texture("out.png");
+		bottom = new Texture("Amp 91.png");
+		enemy = new Enemy(tileWidth/4,tileHeight,5,5);
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			for(int j =0; j < MAP_SIZE; j+=1) {
-				//mapE[i][j] = rand(0,1);
+				//mapE[i][j] = rand(0,50);
 			}
+		}
+		for(int i =0; i < MAP_SIZE; i+=1) {
+			for(int j =0; j < MAP_SIZE; j+=4) {
+				//mapE[j][i] = 1;
+			}
+		}
+		for(int j =0; j < MAP_SIZE; j+=1) {
+			//mapE[j][MAP_SIZE/2] = 0;
 		}
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			mapE[i][0] = 1;
@@ -156,7 +170,7 @@ public class Main extends GLFW{
 			currentTPS = (System.nanoTime()-timeTPS);		
 			//Game loop
 			if(currentTPS >= 1000000000/TPS) {
-
+				enemy.move();
 
 
 
@@ -180,6 +194,7 @@ public class Main extends GLFW{
 				//
 				//					}
 				//				}
+				pathfind();
 				for(int i = 0; i < mapSol.length; i++) {
 					for(int j = 0; j < mapSol[0].length; j++) {
 						if(mapSol[i][j] == 5)
@@ -283,6 +298,12 @@ public class Main extends GLFW{
 					tileWidth+= 0.001;
 					tileHeight+= 0.0005;
 				}
+				if(glfwGetKey(window, GLFW_KEY_P) == GL_TRUE)  {
+					angleR++;
+				}
+				if(glfwGetKey(window, GLFW_KEY_O) == GL_TRUE)  {
+					angleR--;
+				}
 				if(glfwGetKey(window, GLFW_KEY_MINUS) == GL_TRUE)  {
 					if(tileWidth > 0.3) {
 						tileWidth-= 0.001;
@@ -330,9 +351,9 @@ public class Main extends GLFW{
 					camY = 0;
 					mapY++;
 					mapX--;
-					for(int i = 0; i < 10; i++) {
+					//for(int i = 0; i < 10; i++) {
 						pathfind();
-					}
+					//}
 				}
 
 				mouseX = (float)(MouseInput.x/WINDOW_WIDTH)*2-1-camX;
@@ -372,22 +393,22 @@ public class Main extends GLFW{
 				float x=(-(gridWidth*tileWidth)/2+tileWidth/2) +i*tileWidth/2+j*tileWidth/2;
 				float y=tileHeight/2-i*tileHeight/2+j*tileHeight/2;
 				if(mapX+j <= MAP_SIZE-1 && mapY+i <= MAP_SIZE-1 && mapX+j >= 0 && mapY+i >= 0) {
-
 					if(map[mapX+j][mapY+i] == 0) {
+						glColor3f(0.23f,0.51f,0.31f);
 						fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
+						glColor3f(255,255,255);
 						//fillDiamond(x,y,tileWidth,tileHeight,grass);
 					}
 					else if(map[mapX+j][mapY+i] == 1) {
 						//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
 						fillDiamond(x,y,tileWidth,tileHeight,grass);
 					}
-
 				}
 				//else
 				//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
 			}
 		}
-
+	
 		//Drawing mouse
 
 		for(int i =0; i < gridHeight; i++) {
@@ -500,8 +521,8 @@ public class Main extends GLFW{
 								(mapX+j+1 == charXMap && mapY+i-2== charYMap)
 								)
 							glColor4f(255,255,255,0.3f);
-						fillRect(x,y,tileWidth,tileHeight*2,house);
-						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house);
+						fillRect(x,y,tileWidth,tileHeight*2,bottom,0);
+						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house,0);
 						glColor4f(255,255,255,1f);
 					}
 
@@ -517,7 +538,28 @@ public class Main extends GLFW{
 		//drawRect(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight);
 
 		drawChar(0-tileWidth/8-camX,0+tileHeight/2-camY,tileWidth/4,tileHeight, charTextures[(int)animateChar][charMode]);
-
+		
+		for(int i =0; i < gridHeight; i++) {
+			for(int j =gridWidth; j >0; j--) {
+				float x=(-(gridWidth*tileWidth)/2+tileWidth/2) +i*tileWidth/2+j*tileWidth/2;
+				float y=tileHeight/2-i*tileHeight/2+j*tileHeight/2;
+				if(mapX+j <= MAP_SIZE-1 && mapY+i <= MAP_SIZE-1 && mapX+j >= 0 && mapY+i >= 0) {
+		
+					
+					if(enemy.getMapX() == mapX+j && enemy.getMapY() == mapY+i) {
+						
+						//System.out.println("X:" + enemy.getMapX()+ "Y: "+ enemy.getMapY());
+						enemy.setX(x+ enemy.getOffsetX());
+						enemy.setY(y+ enemy.getOffsetY());
+						enemy.draw();
+					
+					}
+				}
+				//else
+				//fillBlock(x,y,tileWidth,tileHeight,tileHeight,out);
+			}
+		}
+		
 		for(int i =0; i < gridHeight; i++) {
 			for(int j =gridWidth; j > 0; j--) {
 				float x = (-(gridWidth*tileWidth)/2+tileWidth/2) +i*tileWidth/2+j*tileWidth/2-tileWidth/2;
@@ -532,15 +574,17 @@ public class Main extends GLFW{
 								(mapX+j+1 == charXMap && mapY+i-2== charYMap)
 								)
 							glColor4f(255,255,255,0.3f);
-						fillRect(x,y,tileWidth,tileHeight*2,house);
-						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house);
+						fillRect(x,y,tileWidth,tileHeight*2,bottom,0);
+						fillRect(x,y+tileHeight,tileWidth,tileHeight*2,house,0);
 						glColor4f(255,255,255,1f);
+						
+						
+
 					}
 
 
 				}
-				//Lighting
-
+				
 
 			}
 		}
@@ -554,10 +598,19 @@ public class Main extends GLFW{
 		//glTranslatef(-0.0001f,0.0001f,0);
 		//fillDiamond(mouseX,mouseY,tileWidth,tileHeight,dirt);
 
-		fillRect(mouseX,mouseY,0.035f,0.1f, cursor);
+		
+		//glPushMatrix();
+		fillRect(mouseX,mouseY,0.035f,0.1f, cursor,0);
+		//glPopMatrix();
+		//fillRect(-0.5f,0.5f,1,1,grass,0);
 
 	}
-	public static void fillRect(float x, float y, float width, float height, Texture texture) {
+	public static void fillRect(float x, float y, float width, float height, Texture texture, int angle) {
+		glPushMatrix();	
+		glTranslatef(x+width/2,y-height/2,0);
+		glRotatef(angle, 0,0, 1);
+		glTranslatef(-(x+width/2),-(y-height/2),0);
+		
 		texture.bind();
 		glBegin(GL_QUADS);
 		glTexCoord2f(0,0);
@@ -572,6 +625,8 @@ public class Main extends GLFW{
 		glTexCoord2f(0,1);
 		glVertex2f(x, y-height);
 		glEnd();
+		
+		glPopMatrix();
 	}
 	public static void drawChar(float x, float y, float width, float height, Texture texture) {
 		float cut = 0.6f;
@@ -590,6 +645,16 @@ public class Main extends GLFW{
 			glTexCoord2f(0,1);
 			glVertex2f(x, y-height);
 			glEnd();
+			
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex2f(x,y);
+//			glVertex2f(x+width, y);
+//			glVertex2f(x+width, y-height);
+//			glVertex2f(x, y-height);
+//			glVertex2f(x,y);
+//			glEnd();		
+			
 		}
 		else {
 			texture.bind();
@@ -606,10 +671,74 @@ public class Main extends GLFW{
 			glTexCoord2f(cut,1);
 			glVertex2f(x, y-height);
 			glEnd();
+			
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex2f(x,y);
+//			glVertex2f(x+width, y);
+//			glVertex2f(x+width, y-height);
+//			glVertex2f(x, y-height);
+//			glVertex2f(x,y);
+//			glEnd();
+		}
+	}
+	public static void drawEnemy(float x, float y, float width, float height, Texture texture, boolean right) {
+		float cut = 0.6f;
+		if(right) {
+			texture.bind();
+			glBegin(GL_QUADS);
+			glTexCoord2f(0,0);
+			glVertex2f(x,y);
+
+			glTexCoord2f(cut,0);
+			glVertex2f(x+width, y);
+
+			glTexCoord2f(cut,1);
+			glVertex2f(x+width, y-height);
+
+			glTexCoord2f(0,1);
+			glVertex2f(x, y-height);
+			glEnd();
+			
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex2f(x,y);
+//			glVertex2f(x+width, y);
+//			glVertex2f(x+width, y-height);
+//			glVertex2f(x, y-height);
+//			glVertex2f(x,y);
+//			glEnd();
+			
+			
+		}
+		else {
+			texture.bind();
+			glBegin(GL_QUADS);
+			glTexCoord2f(cut,0);
+			glVertex2f(x,y);
+
+			glTexCoord2f(0,0);
+			glVertex2f(x+width, y);
+
+			glTexCoord2f(0,1);
+			glVertex2f(x+width, y-height);
+
+			glTexCoord2f(cut,1);
+			glVertex2f(x, y-height);
+			glEnd();
+			
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex2f(x,y);
+//			glVertex2f(x+width, y);
+//			glVertex2f(x+width, y-height);
+//			glVertex2f(x, y-height);
+//			glVertex2f(x,y);
+//			glEnd();
 		}
 	}
 	public static void fillBlock(float x, float y, float width, float length, float height ,Texture texture) {
-
+	
 		texture.bind();
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0.5f,0);
@@ -631,6 +760,8 @@ public class Main extends GLFW{
 		glVertex2f(x-width/2, y-length/2);
 
 		glEnd();
+		
+
 
 	}
 	public static void fillDiamond2(float x, float y, float width, float height) {
@@ -642,7 +773,13 @@ public class Main extends GLFW{
 		glVertex2f(x-width/2, y-height/2);
 		glEnd();
 	}
+
+//	- translate(x,y)
+//	- rotate(r)
+//	- translate(cx, cy);
+	
 	public static void fillDiamond(float x, float y, float width, float height, Texture texture) {
+
 		texture.bind();
 		glBegin(GL_QUADS);
 		glTexCoord2f(0.5f,0);
@@ -657,10 +794,11 @@ public class Main extends GLFW{
 		glTexCoord2f(0,0.5f);
 		glVertex2f(x-width/2, y-height/2);
 		glEnd();
+
+		
 	}
 	public static void drawDiamond(float x, float y, float width, float height) {
 		glBindTexture(GL_TEXTURE_2D, 0);
-
 		glBegin(GL_LINE_STRIP);
 		glVertex2f(x,y);
 		glVertex2f(x+width/2, y-height/2);

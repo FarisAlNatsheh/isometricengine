@@ -17,23 +17,9 @@ public class Pathfinder implements Runnable {
 	int startX,startY,endX,endY;
 	public void run(int map[][], int startX, int startY, int endX, int endY) {
 		//[HEIGHT][WIDTH]
-		//System.out.println(Math.abs(startX-endX)+1);
-		//System.out.println(Math.abs(startY-endY)+1);
-//		if(startX > endX || startY > endY) {
-//			int temp=startY;
-//			int temp2=startX;
-//			startY = endY;
-//			startX = endX;
-//			endX = temp2;
-//			endY = temp;
-//			flipped = true;
-//		}
-		//this.map = new Node[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
-		//mapFinal = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
-		this.map = new Node[map.length][map[0].length];
 		this.mapFinal = new int[map.length][map[0].length];
 
-		
+		System.out.println(Math.abs(startY-endY));
 
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
@@ -45,18 +31,8 @@ public class Pathfinder implements Runnable {
 		}
 		this.map[endY][endX].setType(1); 
 		this.map[startY][startX].setType(0);
-		//System.out.println("Loaded map\n"+ (System.nanoTime()-timeI)*0.000001+" ms");
-		//timeI = System.nanoTime();
-		/*for(int i = startY; i < this.map.length; i++) {
-	for(int j = startX; j < this.map[0].length; j++) {
-		//System.out.print(this.map[i][j].getType()+" ");
-	}
-	//System.out.println();
-}*/
 
 		new Algorithm().Dijkstra();
-		//System.out.println("Ran algorithm\n"+ (System.nanoTime()-timeI)*0.000001+" ms");
-		//timeI = System.nanoTime();
 	}
 	
 	public Pathfinder(int map[][], int startX, int startY, int endX, int endY) {
@@ -69,6 +45,7 @@ public class Pathfinder implements Runnable {
 	}
 	public int[][] getPath() {
 		return mapFinal;
+		//return new int[1][1];
 	}
 	class Algorithm {	//ALGORITHM CLASS
 
@@ -115,6 +92,8 @@ public class Pathfinder implements Runnable {
 			ArrayList<Node> explored = new ArrayList<Node>();	//LIST OF NODES THAT HAVE BEEN EXPLORED
 			for(int a = -1; a <= 1; a++) {
 				for(int b = -1; b <= 1; b++) {
+					if(Math.abs(a) == Math.abs(b) )
+						continue;
 					int xbound = current.getX()+a;
 					int ybound = current.getY()+b;
 					if((xbound > -1 && xbound < map.length) && (ybound > -1 && ybound < map[0].length)) {	//MAKES SURE THE NODE IS NOT OUTSIDE THE GRID
@@ -186,7 +165,7 @@ public class Pathfinder implements Runnable {
 				{0,0,0,0,0},
 				{0,0,0,0,0}
 		};
-		System.out.println(Arrays.deepToString(new Pathfinder(map,3,3,4,4).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
+		System.out.println(Arrays.deepToString(new Pathfinder(map,2,2,3,4).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
 	}
 
 	public void run() {
@@ -195,7 +174,11 @@ public class Pathfinder implements Runnable {
 		this.mapFinal = new int[mapI.length][mapI[0].length];
 
 		
-
+		//System.out.println(Math.abs(startY-endY));
+		//System.out.println(Math.abs(startX-endX));
+		int newMap[][] = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
+		
+		
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
 				if(mapI[i][j] == 0)
