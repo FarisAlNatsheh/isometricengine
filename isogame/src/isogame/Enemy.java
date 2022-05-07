@@ -15,7 +15,7 @@ public class Enemy extends Entity{
 	private int mode;
 	boolean right;
 	double anim;
-	int radius =11;
+	int radius =22;
 	public Enemy(float width, float height, int mapX, int mapY) {
 		super(0, 0, width, height, mapX, mapY);
 		pathfind();

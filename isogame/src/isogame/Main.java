@@ -160,7 +160,7 @@ public class Main extends GLFW{
 		}
 		initializeTextures();
 		System.out.println("Done!\n"+ (System.nanoTime()-start)*0.000001+" ms");
-
+		pathfind();
 		double timeFPS = System.nanoTime();
 		double currentFPS = (System.nanoTime()-timeFPS);
 		double timeTPS = System.nanoTime();
