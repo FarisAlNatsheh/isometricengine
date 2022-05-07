@@ -10,11 +10,12 @@ public class Enemy extends Entity{
 
 	static Texture[][] texture;
 	private Pathfinder pathfinder;
-	private float offsetX, offsetY, speed = 0.007f;
+	private float offsetX, offsetY, speed = 0.012f;
 	private int[][] path;
 	private int mode;
 	boolean right;
 	double anim;
+	int radius =11;
 	public Enemy(float width, float height, int mapX, int mapY) {
 		super(0, 0, width, height, mapX, mapY);
 		pathfind();
@@ -42,10 +43,9 @@ public class Enemy extends Entity{
 
 	}
 	public void pathfind() {
-
 		Thread t = new Thread() {
 			public void run() {
-				pathfinder = new Pathfinder(Main.mapE,getMapX(),getMapY(),Main.charYMap, Main.charXMap);
+				pathfinder = new Pathfinder(Main.mapE,getMapY(),getMapX(),Main.charYMap, Main.charXMap,radius);
 				pathfinder.run();
 				path = pathfinder.getPath();
 			}
@@ -73,7 +73,7 @@ public class Enemy extends Entity{
 
 	
 		//		System.out.println();
-		if(path[getMapX()][getMapY()+1] == 5) {
+		if(path[radius/2][radius/2+1] == 5) {
 			if(Math.sqrt(getOffsetX()*getOffsetX()+getOffsetY()*getOffsetY()) <= Main.tileSide) {
 				moveY(1);
 			}
@@ -81,11 +81,12 @@ public class Enemy extends Entity{
 				offsetX=0;
 				offsetY=0;
 				setMapY(getMapY()+1);
+				pathfind();
 			}
 			right = true;
 			mode = 10;
 		}	
-		else if(path[getMapX()][getMapY()-1] == 5){
+		else if(path[radius/2][radius/2-1] == 5){
 			if(Math.sqrt(getOffsetX()*getOffsetX()+getOffsetY()*getOffsetY()) <= Main.tileSide) {
 				moveY(-1);
 			}
@@ -93,11 +94,12 @@ public class Enemy extends Entity{
 				offsetX=0;
 				offsetY=0;
 				setMapY(getMapY()-1);
+				pathfind();
 			}
 			right = false;
 			mode = 10;
 		}	
-		else if(path[getMapX()+1][getMapY()] == 5){
+		else if(path[radius/2+1][radius/2] == 5){
 			if(Math.sqrt(getOffsetX()*getOffsetX()+getOffsetY()*getOffsetY()) <= Main.tileSide) {
 				moveX(1);
 			}
@@ -105,11 +107,12 @@ public class Enemy extends Entity{
 				offsetX=0;
 				offsetY=0;
 				setMapX(getMapX()+1);
+				pathfind();
 			}
 			right = true;
 			mode = 10;
 		}	
-		else if(path[getMapX()-1][getMapY()] == 5){
+		else if(path[radius/2-1][radius/2] == 5){
 			if(Math.sqrt(getOffsetX()*getOffsetX()+getOffsetY()*getOffsetY()) <= Main.tileSide) {
 				moveX(-1);
 			}
@@ -117,6 +120,7 @@ public class Enemy extends Entity{
 				offsetX=0;
 				offsetY=0;
 				setMapX(getMapX()-1);
+				pathfind();
 			}
 			right = false;
 			mode = 10;

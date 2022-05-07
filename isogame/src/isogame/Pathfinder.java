@@ -7,40 +7,21 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Pathfinder{
-	Node[][] map;
-	int[][] mapFinal;
+	private Node[][] map;
+	private int[][] mapFinal;
 	private int startx;
 	private int starty;
-	boolean flipped;
-	double timeI = System.nanoTime();
-	int mapI[][];
-	int startX,startY,endX,endY;
-	public void run(int map[][], int startX, int startY, int endX, int endY) {
-		//[HEIGHT][WIDTH]
-		this.mapFinal = new int[map.length][map[0].length];
-
-		System.out.println(Math.abs(startY-endY));
-
-		for(int i = 0; i < this.map.length; i++) {
-			for(int j = 0; j < this.map[0].length; j++) {
-				if(map[i][j] == 0)
-					this.map[i][j] = new Node(3,i,j);
-				else
-					this.map[i][j] = new Node(2,i,j);
-			}
-		}
-		this.map[endY][endX].setType(1); 
-		this.map[startY][startX].setType(0);
-
-		new Algorithm().Dijkstra();
-	}
-	
-	public Pathfinder(int map[][], int startX, int startY, int endX, int endY) {
+	private double timeI = System.nanoTime();
+	private int mapI[][];
+	private int startX,startY,endX,endY,radius;
+	private boolean possible;
+	public Pathfinder(int map[][], int startX, int startY, int endX, int endY, int radius) {
 		mapI = map;
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
+		this.radius = radius;
 		run();
 	}
 	public int[][] getPath() {
@@ -158,49 +139,76 @@ public class Pathfinder{
 	}
 	public static void main(String[] args) {
 		int[][] map = {
-				{0,0,0,0,0},
+				{1,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0},
 				{0,0,0,0,0}
 		};
-		System.out.println(Arrays.deepToString(new Pathfinder(map,2,2,3,4).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
+		System.out.println(Arrays.deepToString(new Pathfinder(map,1,1,3,3,7).getPath()).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
+		//for(int i=0; i < 10;i++)
+		//new Pathfinder(new int[33][33],2,2,3,4).getPath();
 	}
 
 	public void run() {
+		//int radius = 5;
 		//run(mapI,startX,startY,endX,endY);
-		System.out.println();
-		System.out.println("Pathfinder:");
-		this.map = new Node[mapI.length][mapI[0].length];
-		this.mapFinal = new int[mapI.length][mapI[0].length];
-
-		System.out.println("Map loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+		//System.out.println();
+		//System.out.println("Pathfinder:");
+		//System.out.println("Map loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
 		timeI = System.nanoTime();
+
 		//System.out.println(Math.abs(startY-endY));
 		//System.out.println(Math.abs(startX-endX));
-		int newMap[][] = new int[Math.abs(startY-endY)+1][Math.abs(startX-endX)+1];
+
+		int newMap[][] = new int[radius][radius];
+		this.map = new Node[newMap.length][newMap[0].length];
+		this.mapFinal = new int[newMap.length][newMap[0].length];
 		
-		
+		for(int i = 0; i < newMap.length; i++) {
+			for(int j = 0; j < newMap[0].length; j++) {
+				try {
+					newMap[i][j] = mapI[startY-radius/2+i][startX-radius/2+j];
+					if(startY-radius/2+i == endY && startX-radius/2+j == endX) {
+						newMap[i][j] = 5;
+					}
+				}
+				catch(Exception e) {newMap[i][j] = 1;}
+				newMap[radius/2][radius/2] = 7;
+				//System.out.print(newMap[i][j]+" ");
+			}
+			//System.out.println();
+		}
+	
+
+		//[2][2]
 		for(int i = 0; i < this.map.length; i++) {
 			for(int j = 0; j < this.map[0].length; j++) {
-				if(mapI[i][j] == 0)
+				if(newMap[i][j] == 0)
 					this.map[i][j] = new Node(3,i,j);
+				else if(newMap[i][j] == 5) {
+					this.map[i][j] = new Node(1,i,j);
+					possible = true;
+				}
 				else
 					this.map[i][j] = new Node(2,i,j);
 			}
 		}
-		System.out.println("Nodes loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+		//System.out.println("Nodes loaded: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
 		timeI = System.nanoTime();
-		
-		startx = startX;
-		starty= startY;
-		this.map[endY][endX].setType(1); 
-		this.map[startY][startX].setType(0);
-		
-		new Algorithm().Dijkstra();
-		System.out.println("Algorithm: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
+
+		startx = radius/2;
+		starty= radius/2;
+		//this.map[endY][endX].setType(1); 
+		this.map[radius/2][radius/2].setType(0);
+		if(possible)
+			new Algorithm().Dijkstra();
+		//System.out.println("Algorithm: "+ (System.nanoTime()-timeI)*0.000001 + " ms");
 		timeI = System.nanoTime();
-		System.out.println();
+		//System.out.println();
+	}
+	public boolean isPossible() {
+		return possible;
 	}
 }
 

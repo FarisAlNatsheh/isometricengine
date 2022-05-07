@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 public class Main extends GLFW{
 	public final static int WINDOW_HEIGHT = 720;
 	public final static int WINDOW_WIDTH = 1280;
-	public final static int MAP_SIZE = 33;
+	public final static int MAP_SIZE = 70;
 	static int gridWidth = 50;
 	static int gridHeight = 50;
 	static float tileWidth = 0.2f, tileHeight = 0.1f;
@@ -91,8 +91,15 @@ public class Main extends GLFW{
 	}
 	public static void pathfind() {
 		//RUN ENEMY PATHFINDING ON THE SAME THREAD
-		for(Enemy enemy: enemies)
-			enemy.pathfind();
+		Thread t = new Thread() {
+			public void run() {
+				for(Enemy enemy: enemies)
+					enemy.pathfind();
+			}
+		};
+		//t.setDaemon(true);
+		t.start();
+		
 	}
 	public static void createWindow() {
 		@SuppressWarnings("unused")
@@ -127,7 +134,7 @@ public class Main extends GLFW{
 		System.out.println("Textures Loaded");
 		Enemy.initializeTextures();
 		enemies = new ArrayList<Enemy>();
-		for(int i= 0; i < 10; i++) {
+		for(int i= 0; i < 100; i++) {
 			enemies.add(new Enemy(tileWidth/4,tileHeight,rand(2,MAP_SIZE-2),rand(2,MAP_SIZE-2)));
 			
 		}
@@ -194,14 +201,7 @@ public class Main extends GLFW{
 				//
 				//					}
 				//				}
-				pathfind();
-				for(int i = 0; i < mapSol.length; i++) {
-					for(int j = 0; j < mapSol[0].length; j++) {
-						if(mapSol[i][j] == 5)
-							map[i][j] = 1;
-
-					}
-				}
+				//pathfind();
 				glfwSetCursorPosCallback(window, cursorInput = new MouseInput());
 				glfwSetScrollCallback(window, scrollInput = new Scroll());
 				if(glfwGetKey(window, GLFW_KEY_W ) == GL_TRUE ||
@@ -299,7 +299,7 @@ public class Main extends GLFW{
 					tileHeight+= 0.0005;
 				}
 				if(glfwGetKey(window, GLFW_KEY_P) == GL_TRUE)  {
-					angleR++;
+					enemies.add(new Enemy(tileWidth/4,tileHeight,rand(2,MAP_SIZE-2),rand(2,MAP_SIZE-2)));
 				}
 				if(glfwGetKey(window, GLFW_KEY_O) == GL_TRUE)  {
 					angleR--;
