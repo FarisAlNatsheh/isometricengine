@@ -134,7 +134,7 @@ public class Main extends GLFW{
 		System.out.println("Textures Loaded");
 		Enemy.initializeTextures();
 		enemies = new ArrayList<Enemy>();
-		for(int i= 0; i < 100; i++) {
+		for(int i= 0; i < 200; i++) {
 			enemies.add(new Enemy(tileWidth/4,tileHeight,rand(2,MAP_SIZE-2),rand(2,MAP_SIZE-2)));
 			
 		}
