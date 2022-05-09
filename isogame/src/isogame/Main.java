@@ -241,8 +241,8 @@ public class Main extends GLFW{
 				if(glfwGetKey(window, GLFW_KEY_W) == GL_TRUE 
 						&& !(mapE[charXMap][charYMap-1] == 1 && topLeft) 
 						&& !(mapE[charXMap+1][charYMap] == 1 && topRight)) {
-					glTranslatef(0,-speed,0);
-					camY-=speed;
+					glTranslatef(0,-speed/2,0);
+					camY-=speed/2;
 					up = true;
 					down = false;
 					left = false;
@@ -250,8 +250,8 @@ public class Main extends GLFW{
 				}
 				if(glfwGetKey(window, GLFW_KEY_S) == GL_TRUE &&
 						!(mapE[charXMap-1][charYMap] == 1 && bottomLeft)&& !(mapE[charXMap][charYMap+1] == 1 && bottomRight)) {
-					glTranslatef(0,speed,0);
-					camY+=speed;
+					glTranslatef(0,speed/2,0);
+					camY+=speed/2;
 					down = true;
 					up = false;
 					left = false;

@@ -19,7 +19,7 @@ public class Enemy extends Entity{
 	public Enemy(float width, float height, int mapX, int mapY) {
 		super(0, 0, width, height, mapX, mapY);
 		pathfind();
-		
+
 	}
 	public static void initializeTextures() {
 		int scale = 200;
@@ -71,9 +71,66 @@ public class Enemy extends Entity{
 		//		System.out.println(path[getMapY()][getMapX()-2] );
 		//		System.out.println(path[getMapY()][getMapX()-1] );
 
-	
+
 		//		System.out.println();
-		if(path[radius/2][radius/2+1] == 5) {
+		if(path[radius/2-1][radius/2-1] == 5){
+			if(-getOffsetX() <= Main.tileWidth) {
+				setOffsetX(getOffsetX()-speed);
+			}
+			else {
+				offsetX=0;
+				//offsetY=0;
+				setMapX(getMapX()-1);
+				setMapY(getMapY()-1);
+				pathfind();
+			}
+			right = false;
+			mode = 10;
+		}
+		else if(path[radius/2+1][radius/2+1] == 5){
+			if(getOffsetX() <= Main.tileWidth) {
+				setOffsetX(getOffsetX()+speed);
+			}
+			else {
+				offsetX=0;
+				//offsetY=0;
+				setMapX(getMapX()+1);
+				setMapY(getMapY()+1);
+				pathfind();
+			}
+			right = true;
+			mode = 10;
+		}
+		
+		else if(path[radius/2-1][radius/2+1] == 5){
+			if(-getOffsetY() <= Main.tileHeight) {
+				setOffsetY(getOffsetY()-speed/2);
+			}
+			else {
+				//offsetX=0;
+				offsetY=0;
+				setMapX(getMapX()-1);
+				setMapY(getMapY()+1);
+				pathfind();
+			}
+			right = false;
+			mode = 10;
+		}
+		else if(path[radius/2+1][radius/2-1] == 5){
+			if(getOffsetY() <= Main.tileHeight) {
+				setOffsetY(getOffsetY()+speed/2);
+			}
+			else {
+				//offsetX=0;
+				offsetY=0;
+				setMapX(getMapX()+1);
+				setMapY(getMapY()-1);
+				pathfind();
+			}
+			right = true;
+			mode = 10;
+		}
+		else if(path[radius/2][radius/2+1] == 5) {
 			if(Math.sqrt(getOffsetX()*getOffsetX()+getOffsetY()*getOffsetY()) <= Main.tileSide) {
 				moveY(1);
 			}
@@ -125,12 +182,13 @@ public class Enemy extends Entity{
 			right = false;
 			mode = 10;
 		}
+
+		
 		else {
 			mode = 7;
 			//System.out.println(123);
 		}
-		//System.out.println(Main.mouseMapX + " , "+ Main.mouseMapY);
-		//System.out.println(getMapX() + " "+ getMapY());
+
 
 		//System.out.println(Arrays.deepToString(path).replace("], ", "]\n").replace("[[", "[").replace("]]","]"));
 		//		for(int i =0; i < path.length; i++) {
@@ -144,9 +202,9 @@ public class Enemy extends Entity{
 	}
 	public void moveX(int dir) {
 		if(dir > 0) {
-				setOffsetX(getOffsetX()+speed);
-				setOffsetY(getOffsetY()+speed/2);
-			
+			setOffsetX(getOffsetX()+speed);
+			setOffsetY(getOffsetY()+speed/2);
+
 		}
 		else {
 			setOffsetX(getOffsetX()-speed);

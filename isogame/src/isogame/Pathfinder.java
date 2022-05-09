@@ -72,8 +72,8 @@ public class Pathfinder{
 			ArrayList<Node> explored = new ArrayList<Node>();	//LIST OF NODES THAT HAVE BEEN EXPLORED
 			for(int a = -1; a <= 1; a++) {
 				for(int b = -1; b <= 1; b++) {
-					if(Math.abs(a) == Math.abs(b) )
-						continue;
+					//if(Math.abs(a) == Math.abs(b) )
+						//continue;
 					int xbound = current.getX()+a;
 					int ybound = current.getY()+b;
 					if((xbound > -1 && xbound < map.length) && (ybound > -1 && ybound < map[0].length)) {	//MAKES SURE THE NODE IS NOT OUTSIDE THE GRID
