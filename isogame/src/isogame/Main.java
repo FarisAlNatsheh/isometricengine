@@ -146,11 +146,11 @@ public class Main extends GLFW{
 		}
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			for(int j =0; j < MAP_SIZE; j+=4) {
-				//mapE[j][i] = 1;
+				mapE[j][i] = 1;
 			}
 		}
 		for(int j =0; j < MAP_SIZE; j+=1) {
-			//mapE[j][MAP_SIZE/2] = 0;
+			mapE[j][MAP_SIZE/2] = 0;
 		}
 		for(int i =0; i < MAP_SIZE; i+=1) {
 			mapE[i][0] = 1;
@@ -375,6 +375,9 @@ public class Main extends GLFW{
 			//Graphics loop
 			if(currentFPS >= targetFPMS) {
 				timeFPS = System.nanoTime();
+				glColor3f(255,255,255);
+				glfwPollEvents();
+				glClear(GL_COLOR_BUFFER_BIT);
 				render();
 				glfwSwapBuffers(window);
 			}
@@ -384,9 +387,7 @@ public class Main extends GLFW{
 		glfwTerminate();
 	}
 	public static void render() {
-		glColor3f(255,255,255);
-		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT);
+
 		//Drawing tiles
 		for(int i =0; i < gridHeight; i++) {
 			for(int j =gridWidth; j >0; j--) {
